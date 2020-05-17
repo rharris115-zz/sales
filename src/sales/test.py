@@ -1,12 +1,19 @@
-from sqlalchemy import inspect, Date, Integer, DateTime, String, Text
-from sqlalchemy.engine import Engine
-
-from . import data
 from io import StringIO
 
+from sqlalchemy import inspect, Date, Integer, DateTime, String, Text
+from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session
 
-def test_import_good_product_data(good_product_json_data: str):
-    data.import_products(StringIO(good_product_json_data))
+from . import data
+
+
+def test_import_good_product_data(sales_date: data, good_product_json_data: str, session: Session):
+    data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+
+    for p in session.query(data.Product):
+        assert p.date == sales_date
+        assert isinstance(p.sku, int)
+        assert isinstance(p.price, int)
 
 
 def test_create_sales(engine: Engine):

@@ -1,10 +1,14 @@
+from datetime import date
+from json import dumps
 from os import PathLike
 from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from json import dumps
+from sqlalchemy.orm import sessionmaker, Session
+
+from . import data
 
 
 @pytest.fixture
@@ -46,3 +50,19 @@ def good_product_json_data() -> str:
             "Price": 9998.0
         }
     ])
+
+
+@pytest.fixture
+def sales_date() -> date:
+    return date(2020, 5, 14)
+
+
+@pytest.fixture
+def engine_with_tables(engine: Engine):
+    data.create_tables(engine=engine)
+    return engine
+
+
+@pytest.fixture
+def session(engine_with_tables: Engine) -> Session:
+    return sessionmaker(bind=engine_with_tables)()

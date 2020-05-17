@@ -1,9 +1,11 @@
 import json
+from datetime import date
 from typing import IO
 
 from sqlalchemy import Column, Integer, Date, DateTime, String, Text, ForeignKey
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
@@ -37,9 +39,11 @@ class Sale(Base):
 def create_tables(engine: Engine):
     meta = Base.metadata
     meta.create_all(bind=engine)
-    return meta
 
 
-def import_products(products: IO[str]):
+def import_products(date: date, products: IO[str], session: Session):
     data = json.loads(s=products.read())
-    return None
+    instances = [Product(date=date, sku=item['Sku'], price=round(100 * item['Price'])) for item in data]
+    session.add_all(instances=instances)
+    session.commit()
+    pass
