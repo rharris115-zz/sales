@@ -46,4 +46,3 @@ def import_products(date: date, products: IO[str], session: Session):
     instances = [Product(date=date, sku=item['Sku'], price=round(100 * item['Price'])) for item in data]
     session.add_all(instances=instances)
     session.commit()
-    pass
