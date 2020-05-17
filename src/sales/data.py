@@ -2,7 +2,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy import Table, Column, Integer, Date, String, ForeignKey, MetaData
 
 
-def create_products_if_not_exists(engine: Engine):
+def _define_meta():
     meta = MetaData()
     Table(
         'Products', meta,
@@ -10,5 +10,10 @@ def create_products_if_not_exists(engine: Engine):
         Column('SKU', Integer, primary_key=True),
         Column('Price', Integer)
     )
+    return meta
+
+
+def create_tables(engine: Engine):
+    meta = _define_meta()
     meta.create_all(bind=engine)
     return meta
