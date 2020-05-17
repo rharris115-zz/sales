@@ -5,7 +5,7 @@ from sqlalchemy import Table, Column, Integer, Date, String, ForeignKey, MetaDat
 def _define_meta():
     meta = MetaData()
     Table(
-        'Products', meta,
+        'Product', meta,
         Column('Date', Date, primary_key=True),
         Column('SKU', Integer, primary_key=True),
         Column('Price', Integer, nullable=False)
