@@ -13,9 +13,9 @@ def test_create_sales(engine: Engine):
     data.create_tables(engine=engine)
     instrument = inspect(subject=engine)
 
-    assert 'Sale' in instrument.get_table_names()
+    assert 'Sales' in instrument.get_table_names()
 
-    [source_id, id, sku, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sale')
+    [source_id, id, sku, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sales')
 
     assert source_id['name'] == 'SourceId'
     assert isinstance(source_id['type'], Integer)
@@ -50,9 +50,9 @@ def test_create_stores(engine: Engine):
     data.create_tables(engine=engine)
     instrument = inspect(engine)
 
-    assert 'Store' in instrument.get_table_names()
+    assert 'Stores' in instrument.get_table_names()
 
-    [id, name, postcode, address] = instrument.get_columns('Store')
+    [id, name, postcode, address] = instrument.get_columns('Stores')
 
     assert id['name'] == 'Id'
     assert isinstance(id['type'], Integer)
@@ -77,9 +77,9 @@ def test_create_products(engine: Engine):
     data.create_tables(engine=engine)
     instrument = inspect(engine)
 
-    assert 'Product' in instrument.get_table_names()
+    assert 'Products' in instrument.get_table_names()
 
-    [date, sku, price] = instrument.get_columns('Product')
+    [date, sku, price] = instrument.get_columns('Products')
 
     assert date['name'] == 'Date'
     assert isinstance(date['type'], Date)
