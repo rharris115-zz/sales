@@ -12,21 +12,12 @@ def test_create_sales(engine: Engine):
 
     [source_id, id, sku, discount_percent, staff_id, timestamp, store_id] = instrument.get_columns('Sale')
 
-    example = {
-        "Id": "3902e58b-a9ba-4102-b88b-2a6d4d5adabe",
-        "Sku": 2536,
-        "DiscountPercent": 0,
-        "StaffId": 10390,
-        "SoldAtUtc": "2020-05-14T12:24:00Z",
-        "Store": "Norwich"
-    }
-
     assert source_id['name'] == 'SourceId'
     assert isinstance(source_id['type'], Integer)
     assert source_id['primary_key'] == 1
 
     assert id['name'] == 'Id'
-    assert isinstance(id['type'], Integer)
+    assert isinstance(id['type'], String)
     assert id['primary_key'] == 2
 
     assert sku['name'] == 'SKU'
