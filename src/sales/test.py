@@ -1,6 +1,7 @@
-from . import data
 from sqlalchemy import inspect, Date, Integer, String, Text
 from sqlalchemy.engine import Engine
+
+from . import data
 
 
 def test_create_stores(engine: Engine):
@@ -17,14 +18,14 @@ def test_create_stores(engine: Engine):
 
     assert name['name'] == 'Name'
     assert isinstance(name['type'], String)
-    assert name['primary_key'] == 2
+    assert not name['nullable']
 
     assert postcode['name'] == 'Postcode'
     assert isinstance(postcode['type'], String)
     assert not postcode['nullable']
 
-    assert address['name'] == 'Postcode'
-    assert isinstance(address['type'], String)
+    assert address['name'] == 'Address'
+    assert isinstance(address['type'], Text)
     assert not address['nullable']
 
 
