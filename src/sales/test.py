@@ -1,7 +1,51 @@
-from sqlalchemy import inspect, Date, Integer, String, Text
+from sqlalchemy import inspect, Date, Integer, Float, DateTime, String, Text
 from sqlalchemy.engine import Engine
 
 from . import data
+
+
+def test_create_sales(engine: Engine):
+    data.create_tables(engine=engine)
+    instrument = inspect(engine)
+
+    assert 'Sale' in instrument.get_table_names()
+
+    [source_id, id, sku, discount_percent, staff_id, timestamp, store_id] = instrument.get_columns('Sale')
+
+    example = {
+        "Id": "3902e58b-a9ba-4102-b88b-2a6d4d5adabe",
+        "Sku": 2536,
+        "DiscountPercent": 0,
+        "StaffId": 10390,
+        "SoldAtUtc": "2020-05-14T12:24:00Z",
+        "Store": "Norwich"
+    }
+
+    assert source_id['name'] == 'SourceId'
+    assert isinstance(source_id['type'], Integer)
+    assert source_id['primary_key'] == 1
+
+    assert id['name'] == 'Id'
+    assert isinstance(id['type'], Integer)
+    assert id['primary_key'] == 2
+
+    assert sku['name'] == 'SKU'
+    assert isinstance(sku['type'], Integer)
+    assert not sku['nullable']
+
+    assert discount_percent['name'] == 'DiscountPercent'
+    assert isinstance(discount_percent['type'], Float)
+
+    assert staff_id['name'] == 'StaffId'
+    assert isinstance(staff_id['type'], Integer)
+    assert not staff_id['nullable']
+
+    assert timestamp['name'] == 'Timestamp'
+    assert isinstance(timestamp['type'], DateTime)
+
+    assert store_id['name'] == 'StoreId'
+    assert isinstance(store_id['type'], Integer)
+    assert not store_id['nullable']
 
 
 def test_create_stores(engine: Engine):
