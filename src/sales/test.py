@@ -1,4 +1,4 @@
-from sqlalchemy import inspect, Date, Integer, Float, DateTime, String, Text
+from sqlalchemy import inspect, Date, Integer, DateTime, String, Text
 from sqlalchemy.engine import Engine
 
 from . import data
@@ -10,7 +10,7 @@ def test_create_sales(engine: Engine):
 
     assert 'Sale' in instrument.get_table_names()
 
-    [source_id, id, sku, discount_percent, staff_id, timestamp, store_id] = instrument.get_columns('Sale')
+    [source_id, id, sku, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sale')
 
     assert source_id['name'] == 'SourceId'
     assert isinstance(source_id['type'], Integer)
@@ -25,8 +25,9 @@ def test_create_sales(engine: Engine):
     assert isinstance(sku['type'], Integer)
     assert not sku['nullable']
 
-    assert discount_percent['name'] == 'DiscountPercent'
-    assert isinstance(discount_percent['type'], Float)
+    assert sold_for['name'] == 'SoldFor'
+    assert isinstance(sold_for['type'], Integer)
+    assert not sold_for['nullable']
 
     assert staff_id['name'] == 'StaffId'
     assert isinstance(staff_id['type'], Integer)
