@@ -10,6 +10,12 @@ from . import data
 def test_update_good_store_data(good_store_json_data: str, session: Session):
     data.update_stores(stores=StringIO(good_store_json_data), session=session)
 
+    for s in session.query(data.Store):
+        assert s.id is not None and isinstance(s.id, int)
+        assert s.name is not None and isinstance(s.name, str)
+        assert s.postcode is not None and isinstance(s.postcode, str)
+        assert s.address is not None and isinstance(s.address, str)
+
 
 def test_import_good_product_data(sales_date: data, good_product_json_data: str, session: Session):
     data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
