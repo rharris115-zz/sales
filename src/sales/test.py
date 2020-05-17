@@ -2,6 +2,11 @@ from sqlalchemy import inspect, Date, Integer, DateTime, String, Text
 from sqlalchemy.engine import Engine
 
 from . import data
+from io import StringIO
+
+
+def test_import_good_product_data(good_product_json_data: str):
+    data.import_products(StringIO(good_product_json_data))
 
 
 def test_create_sales(engine: Engine):
