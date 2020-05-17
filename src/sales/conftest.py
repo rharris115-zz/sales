@@ -8,7 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from . import data
+from . import schema
 
 
 @pytest.fixture
@@ -113,7 +113,7 @@ def sales_date() -> date:
 
 @pytest.fixture
 def engine_with_tables(engine: Engine):
-    data.create_tables(engine=engine)
+    schema.create_tables(engine=engine)
     return engine
 
 
