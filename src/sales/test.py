@@ -18,6 +18,7 @@ def test_create_sales(engine: Engine):
 
     assert id['name'] == 'Id'
     assert isinstance(id['type'], String)
+    assert id['type'].length == 60
     assert id['primary_key'] == 2
 
     assert sku['name'] == 'SKU'
@@ -53,10 +54,12 @@ def test_create_stores(engine: Engine):
 
     assert name['name'] == 'Name'
     assert isinstance(name['type'], String)
+    assert name['type'].length == 40
     assert not name['nullable']
 
     assert postcode['name'] == 'Postcode'
     assert isinstance(postcode['type'], String)
+    assert postcode['type'].length == 8
     assert not postcode['nullable']
 
     assert address['name'] == 'Address'
