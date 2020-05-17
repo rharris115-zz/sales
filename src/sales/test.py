@@ -1,8 +1,7 @@
-import sqlite3
-from os import PathLike
 from . import data
+from sqlalchemy import inspect
 
 
-def test_create_products_if_not_exists(db_path: PathLike):
-    with sqlite3.connect(db_path) as conn:
-        data.create_products_if_not_exists(conn=conn)
+def test_create_products_if_not_exists(engine):
+    data.create_products_if_not_exists(engine=engine)
+    assert 'Products' in inspect(engine).get_table_names()
