@@ -11,7 +11,7 @@ def test_import_good_product_data(good_product_json_data: str):
 
 def test_create_sales(engine: Engine):
     data.create_tables(engine=engine)
-    instrument = inspect(engine)
+    instrument = inspect(subject=engine)
 
     assert 'Sale' in instrument.get_table_names()
 
