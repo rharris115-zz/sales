@@ -8,7 +8,7 @@ def _define_meta():
         'Products', meta,
         Column('Date', Date, primary_key=True),
         Column('SKU', Integer, primary_key=True),
-        Column('Price', Integer)
+        Column('Price', Integer, nullable=False)
     )
     return meta
 
