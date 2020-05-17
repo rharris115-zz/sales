@@ -7,6 +7,10 @@ from sqlalchemy.orm import Session
 from . import data
 
 
+def test_update_good_store_data(good_store_json_data: str, session: Session):
+    data.update_stores(stores=StringIO(good_store_json_data), session=session)
+
+
 def test_import_good_product_data(sales_date: data, good_product_json_data: str, session: Session):
     data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
@@ -16,9 +20,8 @@ def test_import_good_product_data(sales_date: data, good_product_json_data: str,
         assert isinstance(p.price, int)
 
 
-def test_create_sales(engine: Engine):
-    data.create_tables(engine=engine)
-    instrument = inspect(subject=engine)
+def test_create_sales(engine_with_tables: Engine):
+    instrument = inspect(subject=engine_with_tables)
 
     assert 'Sales' in instrument.get_table_names()
 
@@ -53,9 +56,8 @@ def test_create_sales(engine: Engine):
     assert not store_id['nullable']
 
 
-def test_create_stores(engine: Engine):
-    data.create_tables(engine=engine)
-    instrument = inspect(engine)
+def test_create_stores(engine_with_tables: Engine):
+    instrument = inspect(engine_with_tables)
 
     assert 'Stores' in instrument.get_table_names()
 
@@ -80,9 +82,8 @@ def test_create_stores(engine: Engine):
     assert not address['nullable']
 
 
-def test_create_products(engine: Engine):
-    data.create_tables(engine=engine)
-    instrument = inspect(engine)
+def test_create_products(engine_with_tables: Engine):
+    instrument = inspect(engine_with_tables)
 
     assert 'Products' in instrument.get_table_names()
 

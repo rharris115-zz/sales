@@ -53,6 +53,60 @@ def good_product_json_data() -> str:
 
 
 @pytest.fixture
+def good_store_json_data() -> str:
+    return dumps([
+        {
+            "Id": 1,
+            "Name": "Cambridge",
+            "Postcode": "CB1 2BT",
+            "Address": "1 High Street, Cambridge,CB1 2BT"
+        },
+        {
+            "Id": 2,
+            "Name": "Peterborough",
+            "Postcode": "PE1 4HG",
+            "Address": "1 High Street, Peterborough,PE1 4HG"
+        },
+        {
+            "Id": 3,
+            "Name": "St Ives",
+            "Postcode": "PE27 3AB",
+            "Address": "1 High Street, St Ives,PE27 3AB"
+        },
+        {
+            "Id": 4,
+            "Name": "Stevenage",
+            "Postcode": "SG2 6BG",
+            "Address": "1 High Street, Stevenage,SG2 6BG"
+        },
+        {
+            "Id": 5,
+            "Name": "Royston",
+            "Postcode": "SG8 5RY",
+            "Address": "1 High Street, Royston,SG8 5RY"
+        },
+        {
+            "Id": 6,
+            "Name": "Bury St Edmunds",
+            "Postcode": "IP32 6AD",
+            "Address": "1 High Street, Bury St Edmunds,IP32 6AD"
+        },
+        {
+            "Id": 7,
+            "Name": "Norwich",
+            "Postcode": "NR1 5BT",
+            "Address": "1 High Street, Norwich,NR1 5BT"
+        },
+        {
+            "Id": 8,
+            "Name": "Chelmsford",
+            "Postcode": "CM3 8TU",
+            "Address": "1 High Street, Chelmsford,CM3 8TU"
+        }
+    ])
+
+
+@pytest.fixture
 def sales_date() -> date:
     return date(2020, 5, 14)
 
