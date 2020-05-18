@@ -4,7 +4,24 @@ from sqlalchemy import inspect, Date, Integer, DateTime, String, Text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from . import data
+from . import data, schema
+from datetime import datetime
+
+
+def test_import_sales_data_one(good_sales_json_data: str, session: Session):
+    data.import_sales_data_from_source_one(sales_json=StringIO(good_sales_json_data), session=session)
+
+    imported_sales = session.query(schema.Sale)
+
+    assert imported_sales
+
+    for s in imported_sales:
+        assert s.id is not None and isinstance(s.id, int)
+        assert s.sku is not None and isinstance(s.sku, int)
+        assert s.sold_for is not None and isinstance(s.sold_for, int)
+        assert s.staff_id is not None and isinstance(s.staff_id, int)
+        assert s.timestamp is not None and isinstance(s.timestamp, datetime)
+        assert s.store_id is not None and isinstance(s.store_id, int)
 
 
 def test_update_good_store_data(good_store_json_data: str, session: Session):
