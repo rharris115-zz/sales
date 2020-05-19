@@ -51,15 +51,17 @@ def import_sales_data_from_source_one(sales_json: IO[str], session: Session):
     # Query the store names by id.
     store_id_by_name = {name: id for name, id in session.query(Store.name, Store.id)}
 
-    ids = set()
+    record_ids = set()
 
     for item in data:
-        id = item['Id']
 
-        if id is None or id in ids:
+        # Its possible to have duplicate Sales records in this source on the day. We use the 'Id' field
+        # to test for this so that subsequent records with a non-unique 'Id' are ignored.
+        record_id = item['Id']
+        if record_id in record_ids:
             continue
-        else:
-            ids.add(id)
+        elif record_id is not None:
+            record_ids.add(record_id)
 
         sku = item['Sku']
         discount_percent = item['DiscountPercent']
@@ -70,7 +72,7 @@ def import_sales_data_from_source_one(sales_json: IO[str], session: Session):
         sold_for = price_by_sku.get(sku) * (1 - float(discount_percent) / 100)
         store_id = store_id_by_name[store_name]
 
-        sale = Sale(id=id, sku=sku, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp, store_id=store_id)
+        sale = Sale(sku=sku, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp, store_id=store_id)
 
         session.add(sale)
 

@@ -46,7 +46,6 @@ def test_create_sales(engine_with_tables: Engine):
     [id, sku, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sales')
 
     assert id['name'] == 'Id'
-    assert id['type'].length == 60
     assert id['primary_key'] == 1
 
     assert sku['name'] == 'SKU'

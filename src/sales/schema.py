@@ -22,7 +22,7 @@ class Store(Base):
 
 class Sale(Base):
     __tablename__ = 'Sales'
-    id = Column('Id', String(60), primary_key=True)
+    id = Column('Id', Integer, primary_key=True)
     sku = Column('SKU', Integer, ForeignKey('Products.SKU'), nullable=False)
     sold_for = Column('SoldFor', Numeric(scale=2, precision=9), nullable=False)
     staff_id = Column('StaffId', Integer, nullable=False)
