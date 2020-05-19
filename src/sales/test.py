@@ -9,7 +9,10 @@ from . import import_data, query, schema
 
 
 def test_query_cambridgeshire(session_with_products_and_stores_and_sales: Session):
-    query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales)
+    total_sales_by_postcode = query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales,
+                                                            postcode_prefix='CB')
+    assert 'CB1 2BT' in total_sales_by_postcode
+    assert total_sales_by_postcode['CB1 2BT'] == 971.78
 
 
 def test_import_sales_data_two(sales_two_data_csv: str,
