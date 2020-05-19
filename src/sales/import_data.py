@@ -8,22 +8,18 @@ from sqlalchemy.orm import Session
 
 from .schema import Product, Store, Sale
 
-uk_time_zone = pytz.timezone('Europe/London')
+_uk_time_zone = pytz.timezone('Europe/London')
 
 
 def import_products(date: datetime.date, products: IO[str], session: Session):
-    data = json.loads(s=products.read())
-    # It seems this data source uses 'p' as a unit of price and this must be converted to '£'.
-    instances = [Product(date=date, sku=item['Sku'], price=item['Price'] / 100)
-                 for item in data]
-    session.add_all(instances=instances)
+    for item in json.loads(s=products.read()):
+        # It seems this data source uses 'p' as a unit of price and this must be converted to '£'.
+        session.add(Product(date=date, sku=item['Sku'], price=item['Price'] / 100))
     session.commit()
 
 
 def update_stores(stores: IO[str], session: Session):
-    data = json.loads(s=stores.read())
-
-    for item in data:
+    for item in json.loads(s=stores.read()):
         store = Store(id=item['Id'], name=item['Name'], postcode=item['Postcode'], address=item['Address'])
         session.merge(store)
 
@@ -31,10 +27,10 @@ def update_stores(stores: IO[str], session: Session):
 
 
 def _sku_prices_on(sales_date: datetime.date, session: Session) -> Dict[int, float]:
-    # Query the sku prices for the day of this sales data. This should already have been imported.
+    # Query the sku prices for the sales_date. This should already have been imported.
     price_by_sku = {sku: float(price)
                     for sku, price in session.query(Product.sku, Product.price).filter(Product.date == sales_date)}
-    assert price_by_sku, f'No price by SKU data for date={sales_date}.'
+    assert price_by_sku, f'No product data for date={sales_date}.'
     return price_by_sku
 
 
@@ -62,7 +58,7 @@ def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[
         timestamp = pytz.utc.localize(datetime.datetime.strptime(sale_record['SoldAtUtc'], '%Y-%m-%dT%H:%M:%SZ'))
         store_name = sale_record['Store']
 
-        assert timestamp.astimezone(uk_time_zone).date() == sales_date, \
+        assert timestamp.astimezone(_uk_time_zone).date() == sales_date, \
             f'sale_record({sale_record}) can only come from the specified UTC date({sales_date}).'
 
         sold_for = price_by_sku.get(sku) * (1 - float(discount_percent) / 100)
@@ -92,7 +88,7 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
         if timestamp.year == 1:
             timestamp = datetime.datetime.combine(sales_date, datetime.datetime.min.time())
 
-        assert timestamp.astimezone(uk_time_zone).date() == sales_date, \
+        assert timestamp.astimezone(_uk_time_zone).date() == sales_date, \
             f'sale_record({row}) can only come from the specified UTC date({sales_date}).'
 
         assert sku in price_by_sku, f'No price data found for sku({sku}) on day({sales_date})'

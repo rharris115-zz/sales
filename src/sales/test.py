@@ -9,39 +9,21 @@ from . import import_data, schema
 
 
 def test_import_sales_data_two(sales_two_data_csv: str,
-                               good_store_json_data: str,
                                sales_date: date,
-                               good_product_json_data: str,
-                               session: Session):
-    # In order to test the import of sales data, we first need to populate the db with store and product
-    # data.
-    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
-    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
-
+                               session_with_products_and_stores_imported: Session):
     import_data.import_sales_data_from_source_two(sales_date=sales_date,
                                                   sales_csv=StringIO(sales_two_data_csv),
-                                                  session=session)
-
-    imported_sales = session.query(schema.Sale).all()
-
+                                                  session=session_with_products_and_stores_imported)
+    imported_sales = session_with_products_and_stores_imported.query(schema.Sale).all()
     assert imported_sales
 
 
 def test_import_sales_data_one(sales_one_data_json: str,
-                               good_store_json_data: str,
                                sales_date: date,
-                               good_product_json_data: str,
-                               session: Session):
-    # In order to test the import of sales data, we first need to populate the db with store and product
-    # data.
-    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
-    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
-
+                               session_with_products_and_stores_imported: Session):
     import_data.import_sales_data_from_source_one(sales_date=sales_date, sales_json=StringIO(sales_one_data_json),
-                                                  session=session)
-
-    imported_sales = session.query(schema.Sale).all()
-
+                                                  session=session_with_products_and_stores_imported)
+    imported_sales = session_with_products_and_stores_imported.query(schema.Sale).all()
     assert imported_sales
 
 

@@ -1,6 +1,7 @@
 import json
 import textwrap
 from datetime import date
+from io import StringIO
 from os import PathLike
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from . import schema
+from . import schema, import_data
 
 
 @pytest.fixture
@@ -618,3 +619,13 @@ def engine_with_tables(engine: Engine):
 @pytest.fixture
 def session(engine_with_tables: Engine) -> Session:
     return sessionmaker(bind=engine_with_tables)()
+
+
+@pytest.fixture
+def session_with_products_and_stores_imported(sales_date: date,
+                                              good_store_json_data: str, good_product_json_data: str,
+                                              engine_with_tables: Engine):
+    session = sessionmaker(bind=engine_with_tables)()
+    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
+    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+    return session
