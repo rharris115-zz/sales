@@ -1,4 +1,4 @@
-# Sales Data Import
+# Data Import
 ## Product Data
 `product_data.json`
 ```json
@@ -27,6 +27,21 @@ subsequent, unintentional casting to float in the process of generating this fil
 ```
 ### Notes
 - The `Name` and `Postcode` fields seem to be repeated within the `Address` field.
+
+## Staff Data
+`staff_data.json`
+```json
+[
+  {
+    "StoreName": "Cambridge",
+    "StaffIds": [
+      543,
+      241,
+      33
+    ]
+  }
+]
+```
 
 ## Sales Data
 ### Sales One Data
