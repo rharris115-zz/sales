@@ -18,7 +18,9 @@ def test_import_sales_data_two(sales_two_data_csv: str,
     data.update_stores(stores=StringIO(good_store_json_data), session=session)
     data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
-    data.import_sales_data_from_source_two(sales_csv=StringIO(sales_two_data_csv), session=session)
+    data.import_sales_data_from_source_two(sales_date=sales_date,
+                                           sales_csv=StringIO(sales_two_data_csv),
+                                           session=session)
 
     imported_sales = session.query(schema.Sale).all()
 
@@ -35,7 +37,8 @@ def test_import_sales_data_one(sales_one_data_json: str,
     data.update_stores(stores=StringIO(good_store_json_data), session=session)
     data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
-    data.import_sales_data_from_source_one(sales_json=StringIO(sales_one_data_json), session=session)
+    data.import_sales_data_from_source_one(sales_date=sales_date, sales_json=StringIO(sales_one_data_json),
+                                           session=session)
 
     imported_sales = session.query(schema.Sale).all()
 
