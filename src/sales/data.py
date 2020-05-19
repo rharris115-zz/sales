@@ -1,7 +1,7 @@
 import csv
 import datetime
 import json
-from typing import IO, Dict, Any
+from typing import IO, Dict
 
 import pytz
 from sqlalchemy.orm import Session
@@ -13,7 +13,8 @@ uk_time_zone = pytz.timezone('Europe/London')
 
 def import_products(date: datetime.date, products: IO[str], session: Session):
     data = json.loads(s=products.read())
-    instances = [Product(date=date, sku=item['Sku'], price=item['Price'])
+    # It seems this data source uses 'p' as a unit of price and this must be converted to '£'.
+    instances = [Product(date=date, sku=item['Sku'], price=item['Price'] / 100)
                  for item in data]
     session.add_all(instances=instances)
     session.commit()
@@ -29,11 +30,16 @@ def update_stores(stores: IO[str], session: Session):
     session.commit()
 
 
-def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[str], session: Session):
+def _sku_prices_on(sales_date: datetime.date, session: Session) -> Dict[int, float]:
     # Query the sku prices for the day of this sales data. This should already have been imported.
     price_by_sku = {sku: float(price)
                     for sku, price in session.query(Product.sku, Product.price).filter(Product.date == sales_date)}
     assert price_by_sku, f'No price by SKU data for date={sales_date}.'
+    return price_by_sku
+
+
+def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[str], session: Session):
+    price_by_sku = _sku_prices_on(sales_date=sales_date, session=session)
 
     # Query the store names by id.
     store_id_by_name = {name: id for name, id in session.query(Store.name, Store.id)}
@@ -70,10 +76,7 @@ def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[
 
 
 def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[str], session: Session):
-    # Query the sku prices for the day of this sales data. This should already have been imported.
-    price_by_sku = {sku: float(price)
-                    for sku, price in session.query(Product.sku, Product.price).filter(Product.date == sales_date)}
-    assert price_by_sku, f'No price by SKU data for date={sales_date}.'
+    price_by_sku = _sku_prices_on(sales_date=sales_date, session=session)
 
     # Query the store names by id.
     store_ids = {id for (id,) in session.query(Store.id)}
@@ -84,7 +87,7 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
         staff_id = int(row['StaffId'])
         timestamp = pytz.utc.localize(datetime.datetime.strptime(row['Timestamp'], '%d/%m/%Y %H:%M:%S'))
         store_id = int(row['StoreId'])
-        discounted = bool(row['Discounted'])
+        discounted = row['Discounted'] == 'True'
 
         if timestamp.year == 1:
             timestamp = datetime.datetime.combine(sales_date, datetime.datetime.min.time())
@@ -94,8 +97,14 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
 
         assert sku in price_by_sku, f'No price data found for sku({sku}) on day({sales_date})'
 
-        # Use the 'Discounted' field and the sku price to check for consistency.
         sku_price = price_by_sku[sku]
+
+        # We effectively don't have a sold_for value for this sale and must infer from it's sku price.
+        if sold_for == 0:
+            assert not discounted, f'Can\'t infer sold_for from sku_price({sku_price}) if there sale is discounted.'
+            sold_for = sku_price
+
+        # Use the 'Discounted' field and the sku price to check for consistency.
         if discounted:
             assert sku_price > sold_for, f'Sale is discounted, but sku_price({sku_price}) <=  sold_for({sold_for})'
         else:
