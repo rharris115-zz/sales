@@ -5,7 +5,7 @@ from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from . import data, schema
+from . import import_data, schema
 
 
 def test_import_sales_data_two(sales_two_data_csv: str,
@@ -15,12 +15,12 @@ def test_import_sales_data_two(sales_two_data_csv: str,
                                session: Session):
     # In order to test the import of sales data, we first need to populate the db with store and product
     # data.
-    data.update_stores(stores=StringIO(good_store_json_data), session=session)
-    data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
+    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
-    data.import_sales_data_from_source_two(sales_date=sales_date,
-                                           sales_csv=StringIO(sales_two_data_csv),
-                                           session=session)
+    import_data.import_sales_data_from_source_two(sales_date=sales_date,
+                                                  sales_csv=StringIO(sales_two_data_csv),
+                                                  session=session)
 
     imported_sales = session.query(schema.Sale).all()
 
@@ -34,11 +34,11 @@ def test_import_sales_data_one(sales_one_data_json: str,
                                session: Session):
     # In order to test the import of sales data, we first need to populate the db with store and product
     # data.
-    data.update_stores(stores=StringIO(good_store_json_data), session=session)
-    data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
+    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
-    data.import_sales_data_from_source_one(sales_date=sales_date, sales_json=StringIO(sales_one_data_json),
-                                           session=session)
+    import_data.import_sales_data_from_source_one(sales_date=sales_date, sales_json=StringIO(sales_one_data_json),
+                                                  session=session)
 
     imported_sales = session.query(schema.Sale).all()
 
@@ -46,13 +46,13 @@ def test_import_sales_data_one(sales_one_data_json: str,
 
 
 def test_update_good_store_data(good_store_json_data: str, session: Session):
-    data.update_stores(stores=StringIO(good_store_json_data), session=session)
+    import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
 
-    assert session.query(data.Store).all()
+    assert session.query(import_data.Store).all()
 
 
 def test_import_good_product_data(sales_date: date, good_product_json_data: str, session: Session):
-    data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+    import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
     imported_products = session.query(schema.Product).all()
 
