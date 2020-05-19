@@ -8,6 +8,23 @@ from sqlalchemy.orm import Session
 from . import data, schema
 
 
+def test_import_sales_data_two(sales_two_data_csv: str,
+                               good_store_json_data: str,
+                               sales_date: date,
+                               good_product_json_data: str,
+                               session: Session):
+    # In order to test the import of sales data, we first need to populate the db with store and product
+    # data.
+    data.update_stores(stores=StringIO(good_store_json_data), session=session)
+    data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
+
+    data.import_sales_data_from_source_two(sales_json=StringIO(sales_two_data_csv), session=session)
+
+    imported_sales = session.query(schema.Sale).all()
+
+    assert imported_sales
+
+
 def test_import_sales_data_one(sales_one_data_json: str,
                                good_store_json_data: str,
                                sales_date: date,
