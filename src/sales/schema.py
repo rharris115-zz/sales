@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, Date, DateTime, String, Text, ForeignKey
+from sqlalchemy import Column, Integer, Numeric, Date, DateTime, String, Text, ForeignKey
 from sqlalchemy.engine import Engine
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -9,7 +9,7 @@ class Product(Base):
     __tablename__ = 'Products'
     date = Column('Date', Date, primary_key=True)
     sku = Column('SKU', Integer, primary_key=True)
-    price = Column('Price', Integer, nullable=False)
+    price = Column('Price', Numeric(scale=2, precision=9), nullable=False)
 
 
 class Store(Base):
@@ -22,10 +22,9 @@ class Store(Base):
 
 class Sale(Base):
     __tablename__ = 'Sales'
-    source_id = Column('SourceId', Integer, primary_key=True)
     id = Column('Id', String(60), primary_key=True)
     sku = Column('SKU', Integer, ForeignKey('Products.SKU'), nullable=False)
-    sold_for = Column('SoldFor', Integer, nullable=False)
+    sold_for = Column('SoldFor', Numeric(scale=2, precision=9), nullable=False)
     staff_id = Column('StaffId', Integer, nullable=False)
     timestamp = Column('Timestamp', DateTime, nullable=False)
     store_id = Column('StoreId', Integer, ForeignKey('Stores.Id'), nullable=False)
