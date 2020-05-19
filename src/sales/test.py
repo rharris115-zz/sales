@@ -20,7 +20,7 @@ def test_import_sales_data_one(sales_one_data_json: str,
 
     data.import_sales_data_from_source_one(sales_json=StringIO(sales_one_data_json), session=session)
 
-    imported_sales = session.query(schema.Sale)
+    imported_sales = session.query(schema.Sale).all()
 
     assert imported_sales
 
@@ -28,13 +28,15 @@ def test_import_sales_data_one(sales_one_data_json: str,
 def test_update_good_store_data(good_store_json_data: str, session: Session):
     data.update_stores(stores=StringIO(good_store_json_data), session=session)
 
-    assert list(session.query(data.Store))
+    assert session.query(data.Store).all()
 
 
 def test_import_good_product_data(sales_date: date, good_product_json_data: str, session: Session):
     data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
 
-    for p in session.query(schema.Product):
+    imported_products = session.query(schema.Product).all()
+
+    for p in imported_products:
         assert p.date == sales_date
 
 
