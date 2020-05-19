@@ -97,7 +97,7 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
 
         # We effectively don't have a sold_for value for this sale and must infer from it's sku price.
         if sold_for == 0:
-            assert not discounted, f'Can\'t infer sold_for from sku_price({sku_price}) if there sale is discounted.'
+            assert not discounted, f'Can\'t infer sold_for from sku_price({sku_price}) if the sale is discounted.'
             sold_for = sku_price
 
         # Use the 'Discounted' field and the sku price to check for consistency.
