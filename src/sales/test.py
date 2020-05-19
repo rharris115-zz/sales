@@ -5,7 +5,11 @@ from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from . import import_data, schema
+from . import import_data, query, schema
+
+
+def test_query_cambridgeshire(session_with_products_and_stores_and_sales: Session):
+    query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales)
 
 
 def test_import_sales_data_two(sales_two_data_csv: str,
@@ -29,15 +33,14 @@ def test_import_sales_data_one(sales_one_data_json: str,
 
 def test_update_good_store_data(good_store_json_data: str, session: Session):
     import_data.update_stores(stores=StringIO(good_store_json_data), session=session)
-
-    assert session.query(import_data.Store).all()
+    stores = session.query(import_data.Store).all()
+    assert stores
 
 
 def test_import_good_product_data(sales_date: date, good_product_json_data: str, session: Session):
     import_data.import_products(date=sales_date, products=StringIO(good_product_json_data), session=session)
-
     imported_products = session.query(schema.Product).all()
-
+    assert imported_products
     for p in imported_products:
         assert p.date == sales_date
 
