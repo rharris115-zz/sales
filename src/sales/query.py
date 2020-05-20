@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Sequence
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session, Query
@@ -34,4 +34,14 @@ def sales_by_sku(*skus, session: Session) -> Dict[int, float]:
     return {
         sku: float(total)
         for sku, total in q.group_by(Sale.sku)
+    }
+
+
+def sales_by_store_name(*store_names, session: Session) -> Dict[str, float]:
+    q: Query = session.query(Store.name, func.sum(Sale.sold_for)).join(Store)
+    if store_names:
+        q = q.filter(Store.name.in_(store_names))
+    return {
+        store_name: float(total)
+        for store_name, total in q.group_by(Store.name)
     }
