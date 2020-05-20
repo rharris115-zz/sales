@@ -24,3 +24,11 @@ def total_sales_by_staff_id(session: Session) -> Dict[int, float]:
             .query(Sale.staff_id, func.sum(Sale.sold_for))
             .group_by(Sale.staff_id)
     }
+
+
+def sales_by_sku(session: Session) -> Dict[int, float]:
+    return {
+        sku: float(total)
+        for sku, total in session.query(Sale.sku, func.sum(Sale.sold_for))
+            .group_by(Sale.sku)
+    }
