@@ -59,3 +59,15 @@ def average_sales_for_and_sku_price_by_staff_id(*staff_ids, session: Session):
         staff_id: (int(count), float(total_sold_for / count), float(total_sku_price / count))
         for staff_id, count, total_sold_for, total_sku_price in q.group_by(Sale.staff_id)
     }
+
+
+def query_average_sale_for_and_sku_price_by_sku(*skus, session: Session):
+    q: Query = session.query(Sale.sku, func.count(), func.sum(Sale.sold_for), Product.price) \
+        .filter(Sale.business_date == Product.date) \
+        .filter(Sale.sku == Product.sku)
+    if skus:
+        q = q.filter(Sale.sku.in_(skus))
+    return {
+        sku: (int(count), float(total_sold_for / count), float(sku_price))
+        for sku, count, total_sold_for, sku_price in q.group_by(Sale.sku)
+    }
