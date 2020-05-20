@@ -1,7 +1,7 @@
 from typing import Dict
 
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
 from .schema import Store, Sale
 
@@ -26,9 +26,11 @@ def total_sales_by_staff_id(session: Session) -> Dict[int, float]:
     }
 
 
-def sales_by_sku(session: Session) -> Dict[int, float]:
+def sales_by_sku(*skus, session: Session) -> Dict[int, float]:
+    q: Query = session.query(Sale.sku, func.sum(Sale.sold_for))
+    if skus:
+        q = q.filter(Sale.sku.in_(skus))
     return {
         sku: float(total)
-        for sku, total in session.query(Sale.sku, func.sum(Sale.sold_for))
-            .group_by(Sale.sku)
+        for sku, total in q.group_by(Sale.sku)
     }
