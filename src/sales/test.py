@@ -8,9 +8,29 @@ from sqlalchemy.orm import Session
 from . import import_data, query, schema
 
 
+def test_query_by_store_name_Cambridge(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.sales_by_store_name('Cambridge', session=session_with_products_and_stores_and_sales_imported)
+    assert 'Cambridge' in result
+
+
+def test_query_by_store_name(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.sales_by_store_name(session=session_with_products_and_stores_and_sales_imported)
+    assert result
+
+
+def test_query_sales_by_sku_1241(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.sales_by_sku(1241, session=session_with_products_and_stores_and_sales_imported)
+    assert 1241 in result
+
+
 def test_query_sales_by_sku(session_with_products_and_stores_and_sales_imported: Session):
     result = query.sales_by_sku(session=session_with_products_and_stores_and_sales_imported)
     assert result
+
+
+def test_query_sales_by_staff_id_33(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.total_sales_by_staff_id(33, session=session_with_products_and_stores_and_sales_imported)
+    assert 33 in result
 
 
 def test_query_sales_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
