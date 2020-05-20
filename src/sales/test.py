@@ -8,12 +8,24 @@ from sqlalchemy.orm import Session
 from . import import_data, query, schema
 
 
-def test_query_by_store_name_Cambridge(session_with_products_and_stores_and_sales_imported: Session):
+def test_query_total_sold_for_and_sku_price_by_staff_id_33(
+        session_with_products_and_stores_and_sales_imported: Session):
+    result = query.total_sales_and_sku_price_by_staff_id(33,
+                                                         session=session_with_products_and_stores_and_sales_imported)
+    assert 33 in result
+
+
+def test_query_total_sold_for_and_sku_price_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.total_sales_and_sku_price_by_staff_id(session=session_with_products_and_stores_and_sales_imported)
+    assert result
+
+
+def test_query_sales_by_store_name_Cambridge(session_with_products_and_stores_and_sales_imported: Session):
     result = query.sales_by_store_name('Cambridge', session=session_with_products_and_stores_and_sales_imported)
     assert 'Cambridge' in result
 
 
-def test_query_by_store_name(session_with_products_and_stores_and_sales_imported: Session):
+def test_query_sales_by_store_name(session_with_products_and_stores_and_sales_imported: Session):
     result = query.sales_by_store_name(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
@@ -48,7 +60,7 @@ def test_query_cambridgeshire(session_with_products_and_stores_and_sales_importe
 def test_import_sales_data_two(sales_two_data_csv: str,
                                sales_date: date,
                                session_with_products_and_stores_imported: Session):
-    import_data.import_sales_data_from_source_two(sales_date=sales_date,
+    import_data.import_sales_data_from_source_two(business_date=sales_date,
                                                   sales_csv=StringIO(sales_two_data_csv),
                                                   session=session_with_products_and_stores_imported)
     imported_sales = session_with_products_and_stores_imported.query(schema.Sale).all()
@@ -58,7 +70,7 @@ def test_import_sales_data_two(sales_two_data_csv: str,
 def test_import_sales_data_one(sales_one_data_json: str,
                                sales_date: date,
                                session_with_products_and_stores_imported: Session):
-    import_data.import_sales_data_from_source_one(sales_date=sales_date, sales_json=StringIO(sales_one_data_json),
+    import_data.import_sales_data_from_source_one(business_date=sales_date, sales_json=StringIO(sales_one_data_json),
                                                   session=session_with_products_and_stores_imported)
     imported_sales = session_with_products_and_stores_imported.query(schema.Sale).all()
     assert imported_sales
@@ -83,13 +95,16 @@ def test_create_sales(engine_with_tables: Engine):
 
     assert 'Sales' in instrument.get_table_names()
 
-    [id, sku, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sales')
+    [id, sku, business_date, sold_for, staff_id, timestamp, store_id] = instrument.get_columns('Sales')
 
     assert id['name'] == 'Id'
     assert id['primary_key'] == 1
 
     assert sku['name'] == 'SKU'
     assert not sku['nullable']
+
+    assert business_date['name'] == 'BusinessDate'
+    assert not business_date['nullable']
 
     assert sold_for['name'] == 'SoldFor'
     assert not sold_for['nullable']

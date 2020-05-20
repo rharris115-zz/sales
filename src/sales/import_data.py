@@ -26,16 +26,16 @@ def update_stores(stores: IO[str], session: Session):
     session.commit()
 
 
-def _sku_prices_on(sales_date: datetime.date, session: Session) -> Dict[int, float]:
+def _sku_prices_on(business_date: datetime.date, session: Session) -> Dict[int, float]:
     # Query the sku prices for the sales_date. This should already have been imported.
     price_by_sku = {sku: float(price)
-                    for sku, price in session.query(Product.sku, Product.price).filter(Product.date == sales_date)}
-    assert price_by_sku, f'No product data for date={sales_date}.'
+                    for sku, price in session.query(Product.sku, Product.price).filter(Product.date == business_date)}
+    assert price_by_sku, f'No product data for date={business_date}.'
     return price_by_sku
 
 
-def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[str], session: Session):
-    price_by_sku = _sku_prices_on(sales_date=sales_date, session=session)
+def import_sales_data_from_source_one(business_date: datetime.date, sales_json: IO[str], session: Session):
+    price_by_sku = _sku_prices_on(business_date=business_date, session=session)
 
     # Query the store names by id.
     store_id_by_name = {name: id for name, id in session.query(Store.name, Store.id)}
@@ -58,21 +58,22 @@ def import_sales_data_from_source_one(sales_date: datetime.date, sales_json: IO[
         timestamp = pytz.utc.localize(datetime.datetime.strptime(sale_record['SoldAtUtc'], '%Y-%m-%dT%H:%M:%SZ'))
         store_name = sale_record['Store']
 
-        assert timestamp.astimezone(_uk_time_zone).date() == sales_date, \
-            f'sale_record({sale_record}) can only come from the specified UTC date({sales_date}).'
+        assert timestamp.astimezone(_uk_time_zone).date() == business_date, \
+            f'sale_record({sale_record}) can only come from the specified UTC date({business_date}).'
 
         sold_for = price_by_sku.get(sku) * (1 - float(discount_percent) / 100)
         store_id = store_id_by_name[store_name]
 
-        sale = Sale(sku=sku, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp, store_id=store_id)
+        sale = Sale(sku=sku, business_date=business_date, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp,
+                    store_id=store_id)
 
         session.add(sale)
 
     session.commit()
 
 
-def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[str], session: Session):
-    price_by_sku = _sku_prices_on(sales_date=sales_date, session=session)
+def import_sales_data_from_source_two(business_date: datetime.date, sales_csv: IO[str], session: Session):
+    price_by_sku = _sku_prices_on(business_date=business_date, session=session)
 
     # Query the store names by id.
     store_ids = {id for (id,) in session.query(Store.id)}
@@ -86,12 +87,12 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
         discounted = row['Discounted'] == 'True'
 
         if timestamp.year == 1:
-            timestamp = datetime.datetime.combine(sales_date, datetime.datetime.min.time())
+            timestamp = datetime.datetime.combine(business_date, datetime.datetime.min.time())
 
-        assert timestamp.astimezone(_uk_time_zone).date() == sales_date, \
-            f'sale_record({row}) can only come from the specified UTC date({sales_date}).'
+        assert timestamp.astimezone(_uk_time_zone).date() == business_date, \
+            f'sale_record({row}) can only come from the specified UTC date({business_date}).'
 
-        assert sku in price_by_sku, f'No price data found for sku({sku}) on day({sales_date})'
+        assert sku in price_by_sku, f'No price data found for sku({sku}) on day({business_date})'
 
         sku_price = price_by_sku[sku]
 
@@ -108,7 +109,8 @@ def import_sales_data_from_source_two(sales_date: datetime.date, sales_csv: IO[s
 
         assert store_id in store_ids, f'store_id({store_id}) not known.'
 
-        sale = Sale(sku=sku, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp, store_id=store_id)
+        sale = Sale(sku=sku, business_date=business_date, sold_for=sold_for, staff_id=staff_id, timestamp=timestamp,
+                    store_id=store_id)
         session.add(sale)
 
     session.commit()
