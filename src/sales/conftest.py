@@ -631,10 +631,10 @@ def session_with_products_and_stores_imported(sales_date: date,
 
 
 @pytest.fixture
-def session_with_products_and_stores_and_sales(sales_date: date,
-                                               sales_one_data_json: str,
-                                               sales_two_data_csv: str,
-                                               session_with_products_and_stores_imported: Session) -> Session:
+def session_with_products_and_stores_and_sales_imported(sales_date: date,
+                                                        sales_one_data_json: str,
+                                                        sales_two_data_csv: str,
+                                                        session_with_products_and_stores_imported: Session) -> Session:
     import_data.import_sales_data_from_source_one(sales_date=sales_date,
                                                   sales_json=StringIO(sales_one_data_json),
                                                   session=session_with_products_and_stores_imported)

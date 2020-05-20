@@ -8,8 +8,12 @@ from sqlalchemy.orm import Session
 from . import import_data, query, schema
 
 
-def test_query_cambridgeshire(session_with_products_and_stores_and_sales: Session):
-    total_sales_by_postcode = query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales,
+def test_query_sales_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
+    total_sales_by_staff_id = query.total_sales_by_staff_id(session_with_products_and_stores_and_sales_imported)
+
+
+def test_query_cambridgeshire(session_with_products_and_stores_and_sales_imported: Session):
+    total_sales_by_postcode = query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales_imported,
                                                             postcode_prefix='CB')
     assert 'CB1 2BT' in total_sales_by_postcode
     assert total_sales_by_postcode['CB1 2BT'] == 971.78
