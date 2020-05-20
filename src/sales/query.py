@@ -1,4 +1,4 @@
-from typing import Dict, Sequence
+from typing import Dict
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session, Query
