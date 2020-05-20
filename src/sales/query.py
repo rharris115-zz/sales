@@ -17,12 +17,13 @@ def total_sales_by_postcode(session: Session, postcode_prefix: str = '') -> Dict
         }
 
 
-def total_sales_by_staff_id(session: Session) -> Dict[int, float]:
+def total_sales_by_staff_id(*staff_ids, session: Session) -> Dict[int, float]:
+    q: Query = session.query(Sale.staff_id, func.sum(Sale.sold_for))
+    if staff_ids:
+        q = q.filter(Sale.staff_id.in_(staff_ids))
     return {
         staff_id: float(total)
-        for staff_id, total in session \
-            .query(Sale.staff_id, func.sum(Sale.sold_for))
-            .group_by(Sale.staff_id)
+        for staff_id, total in q.group_by(Sale.staff_id)
     }
 
 

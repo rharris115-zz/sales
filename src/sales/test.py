@@ -14,7 +14,7 @@ def test_query_sales_by_sku(session_with_products_and_stores_and_sales_imported:
 
 
 def test_query_sales_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.total_sales_by_staff_id(session_with_products_and_stores_and_sales_imported)
+    result = query.total_sales_by_staff_id(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
