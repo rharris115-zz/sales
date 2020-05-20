@@ -8,15 +8,16 @@ from sqlalchemy.orm import Session
 from . import import_data, query, schema
 
 
-def test_query_total_sold_for_and_sku_price_by_staff_id_33(
+def test_query_average_sales_for_and_sku_price_by_staff_id_33(
         session_with_products_and_stores_and_sales_imported: Session):
-    result = query.total_sales_and_sku_price_by_staff_id(33,
-                                                         session=session_with_products_and_stores_and_sales_imported)
+    result = query.average_sales_for_and_sku_price_by_staff_id(33,
+                                                               session=session_with_products_and_stores_and_sales_imported)
     assert 33 in result
 
 
-def test_query_total_sold_for_and_sku_price_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.total_sales_and_sku_price_by_staff_id(session=session_with_products_and_stores_and_sales_imported)
+def test_average_sales_for_and_sku_price_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
+    result = query.average_sales_for_and_sku_price_by_staff_id(
+        session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 

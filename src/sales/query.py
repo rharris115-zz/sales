@@ -48,7 +48,7 @@ def sales_by_store_name(*store_names, session: Session) -> Dict[str, float]:
     }
 
 
-def total_sales_and_sku_price_by_staff_id(*staff_ids, session: Session):
+def average_sales_for_and_sku_price_by_staff_id(*staff_ids, session: Session):
     q: Query = session.query(Sale.staff_id, func.count(), func.sum(Sale.sold_for),
                              func.sum(Product.price)) \
         .filter(Sale.business_date == Product.date) \
