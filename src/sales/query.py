@@ -49,25 +49,24 @@ def sales_by_store_name(*store_names, session: Session) -> Dict[str, float]:
 
 
 def average_sales_for_and_sku_price_by_staff_id(*staff_ids, session: Session):
-    q: Query = session.query(Sale.staff_id, func.count(), func.sum(Sale.sold_for),
-                             func.sum(Product.price)) \
+    q: Query = session.query(Sale.staff_id, func.count(), func.avg(Sale.sold_for), func.avg(Product.price)) \
         .filter(Sale.business_date == Product.date) \
         .filter(Sale.sku == Product.sku)
     if staff_ids:
         q = q.filter(Sale.staff_id.in_(staff_ids))
     return {
-        staff_id: (int(count), float(total_sold_for / count), float(total_sku_price / count))
+        staff_id: (int(count), float(total_sold_for), float(total_sku_price))
         for staff_id, count, total_sold_for, total_sku_price in q.group_by(Sale.staff_id)
     }
 
 
-def query_average_sale_for_and_sku_price_by_sku(*skus, session: Session):
-    q: Query = session.query(Sale.sku, func.count(), func.sum(Sale.sold_for), Product.price) \
+def average_sale_for_and_sku_price_by_sku(*skus, session: Session):
+    q: Query = session.query(Sale.sku, func.count(), func.avg(Sale.sold_for), Product.price) \
         .filter(Sale.business_date == Product.date) \
         .filter(Sale.sku == Product.sku)
     if skus:
         q = q.filter(Sale.sku.in_(skus))
     return {
-        sku: (int(count), float(total_sold_for / count), float(sku_price))
+        sku: (int(count), float(total_sold_for), float(sku_price))
         for sku, count, total_sold_for, sku_price in q.group_by(Sale.sku)
     }

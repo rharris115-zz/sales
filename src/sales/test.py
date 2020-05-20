@@ -9,7 +9,7 @@ from . import import_data, query, schema
 
 
 def test_query_average_sale_for_and_sku_price_by_sku_1241(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.query_average_sale_for_and_sku_price_by_sku(
+    result = query.average_sale_for_and_sku_price_by_sku(
         1241,
         session=session_with_products_and_stores_and_sales_imported
     )
@@ -17,7 +17,7 @@ def test_query_average_sale_for_and_sku_price_by_sku_1241(session_with_products_
 
 
 def test_query_average_sale_for_and_sku_price_by_sku(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.query_average_sale_for_and_sku_price_by_sku(
+    result = query.average_sale_for_and_sku_price_by_sku(
         session=session_with_products_and_stores_and_sales_imported
     )
     assert result
