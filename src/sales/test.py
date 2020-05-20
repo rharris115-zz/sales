@@ -10,6 +10,7 @@ from . import import_data, query, schema
 
 def test_query_sales_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
     total_sales_by_staff_id = query.total_sales_by_staff_id(session_with_products_and_stores_and_sales_imported)
+    assert total_sales_by_staff_id
 
 
 def test_query_cambridgeshire(session_with_products_and_stores_and_sales_imported: Session):
