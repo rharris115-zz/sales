@@ -9,30 +9,33 @@ from . import import_data, query, schema
 
 
 def test_query_average_sale_for_and_sku_price_by_sku_1241(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.average_sale_for_and_sku_price_by_sku(
-        1241,
-        session=session_with_products_and_stores_and_sales_imported
-    )
+    result = query.SalesQueryBuilder \
+        .by_sku() \
+        .of_skus(1241) \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert 1241 in result
 
 
 def test_query_average_sale_for_and_sku_price_by_sku(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.average_sale_for_and_sku_price_by_sku(
-        session=session_with_products_and_stores_and_sales_imported
-    )
+    result = query.SalesQueryBuilder \
+        .by_sku() \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
 def test_query_average_sales_for_and_sku_price_by_staff_id_33(
         session_with_products_and_stores_and_sales_imported: Session):
-    result = query.average_sales_for_and_sku_price_by_staff_id(33,
-                                                               session=session_with_products_and_stores_and_sales_imported)
+    result = query.SalesQueryBuilder \
+        .by_staff_id() \
+        .of_staff_ids(33) \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert 33 in result
 
 
 def test_average_sales_for_and_sku_price_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.average_sales_for_and_sku_price_by_staff_id(
-        session=session_with_products_and_stores_and_sales_imported)
+    result = query.SalesQueryBuilder \
+        .by_staff_id() \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
