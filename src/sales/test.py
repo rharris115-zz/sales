@@ -5,7 +5,7 @@ from sqlalchemy import inspect
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from . import import_data, query, schema
+from . import import_data, schema
 from .query import SalesQuery
 
 
@@ -41,28 +41,38 @@ def test_average_sales_for_and_sku_price_by_staff_id(session_with_products_and_s
 
 
 def test_query_sales_by_store_name_Cambridge(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.sales_by_store_name('Cambridge', session=session_with_products_and_stores_and_sales_imported)
+    result = SalesQuery \
+        .of_total_sales_by_store_name() \
+        .with_store_names('Cambridge') \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert 'Cambridge' in result
 
 
 def test_query_sales_by_store_name(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.sales_by_store_name(session=session_with_products_and_stores_and_sales_imported)
+    result = SalesQuery \
+        .of_total_sales_by_store_name() \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
 def test_query_sales_by_sku_1241(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.sales_by_sku(1241, session=session_with_products_and_stores_and_sales_imported)
+    result = SalesQuery \
+        .of_total_sales_by_sku() \
+        .with_skus(1241) \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert 1241 in result
 
 
 def test_query_sales_by_sku(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.sales_by_sku(session=session_with_products_and_stores_and_sales_imported)
+    result = SalesQuery \
+        .of_total_sales_by_sku() \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
 def test_query_sales_by_staff_id_33(session_with_products_and_stores_and_sales_imported: Session):
     result = SalesQuery \
-        .of_total_sales_by_staff() \
+        .of_total_sales_by_staff_id() \
         .with_staff_ids(33) \
         .run(session=session_with_products_and_stores_and_sales_imported)
     assert 33 in result
@@ -70,16 +80,19 @@ def test_query_sales_by_staff_id_33(session_with_products_and_stores_and_sales_i
 
 def test_query_sales_by_staff_id(session_with_products_and_stores_and_sales_imported: Session):
     result = SalesQuery \
-        .of_total_sales_by_staff() \
+        .of_total_sales_by_staff_id() \
         .run(session=session_with_products_and_stores_and_sales_imported)
     assert result
 
 
 def test_query_cambridgeshire(session_with_products_and_stores_and_sales_imported: Session):
-    result = query.total_sales_by_postcode(session=session_with_products_and_stores_and_sales_imported,
-                                           postcode_prefix='CB')
+    result = SalesQuery \
+        .of_total_sales_by_postcode() \
+        .with_postcode_pattern(pattern='CB%') \
+        .run(session=session_with_products_and_stores_and_sales_imported)
     assert 'CB1 2BT' in result
-    assert result['CB1 2BT'] == 971.78
+    (total,) = result['CB1 2BT']
+    assert float(total) == 971.78
 
 
 def test_import_sales_data_two(sales_two_data_csv: str,

@@ -1,42 +1,10 @@
-from typing import Dict, Tuple
+from datetime import date
+from typing import Tuple, Union
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session, Query
 
 from .schema import Store, Sale, Product
-from datetime import date
-
-
-def total_sales_by_postcode(session: Session, postcode_prefix: str = '') -> Dict[str, float]:
-    return {
-        postcode: float(total)
-        for postcode, total in session
-            .query(Store.postcode, func.sum(Sale.sold_for))
-            .filter(Store.id == Sale.store_id)
-            .filter(Store.postcode.startswith(postcode_prefix))
-            .group_by(Store.postcode)
-    }
-
-
-def sales_by_sku(*skus, session: Session) -> Dict[int, float]:
-    q: Query = session.query(Sale.sku, func.sum(Sale.sold_for))
-    if skus:
-        q = q.filter(Sale.sku.in_(skus))
-    return {
-        sku: float(total)
-        for sku, total in q.group_by(Sale.sku)
-    }
-
-
-def sales_by_store_name(*store_names, session: Session) -> Dict[str, float]:
-    q: Query = session.query(Store.name, func.sum(Sale.sold_for)) \
-        .filter(Store.id == Sale.store_id)
-    if store_names:
-        q = q.filter(Store.name.in_(store_names))
-    return {
-        store_name: float(total)
-        for store_name, total in q.group_by(Store.name)
-    }
 
 
 class SalesQuery():
@@ -48,13 +16,25 @@ class SalesQuery():
         self._skus: Tuple[str] = tuple()
         self._staff_ids: Tuple[int] = tuple()
         self._store_names: Tuple[str] = tuple()
-
+        self._postcode_pattern: Union[str, type(None)] = None
         self._start: date = date.min
         self._finish: date = date.max
 
     @classmethod
-    def of_total_sales_by_staff(cls):
+    def of_total_sales_by_postcode(cls):
+        return cls(func.sum(Sale.sold_for), key=Store.postcode)
+
+    @classmethod
+    def of_total_sales_by_store_name(cls):
+        return cls(func.sum(Sale.sold_for), key=Store.name)
+
+    @classmethod
+    def of_total_sales_by_staff_id(cls):
         return cls(func.sum(Sale.sold_for), key=Sale.staff_id)
+
+    @classmethod
+    def of_total_sales_by_sku(cls):
+        return cls(func.sum(Sale.sold_for), key=Sale.sku)
 
     @classmethod
     def of_average_sold_for_and_sku_price_by_staff_id(cls):
@@ -78,6 +58,10 @@ class SalesQuery():
 
     def with_store_names(self, *store_names):
         self._store_names = store_names
+        return self
+
+    def with_postcode_pattern(self, pattern: str):
+        self._postcode_pattern = pattern
         return self
 
     def starting(self, date: date):
@@ -104,8 +88,10 @@ class SalesQuery():
             q = q.filter(Sale.business_date >= self._start)
         if self._finish < date.max:
             q = q.filter(Sale.business_date <= self._finish)
+        if self._postcode_pattern is not None:
+            q = q.filter(Store.postcode.like(self._postcode_pattern))
 
         return {
-            key: values
+            key: tuple(values)
             for key, *values in q.group_by(self._key)
         }
