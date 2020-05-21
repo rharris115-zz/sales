@@ -233,7 +233,7 @@ result = {
 }
 ```
 ### Filtering
-All of the previous query's support additional filtering. For example, if you wanted to see staff id 33's total
+All of the previous querys support additional filtering. For example, if you wanted to see staff id 33's total
 sales broken down by SKU, you have.
 ```python
 result = SalesQuery \
