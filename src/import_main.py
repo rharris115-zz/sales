@@ -11,10 +11,14 @@ from sqlalchemy.orm import sessionmaker, Session
 @click.command()
 @click.argument('business-date', type=click.DateTime(formats=['%Y-%m-%d']))
 @click.argument('output', type=click.Path(resolve_path=True))
-@click.option('--products', '-p', type=click.File('r'), default='product_data.json', help='The products file.')
-@click.option('--stores', '-s', type=click.File('r'), default='store_data.json', help='The stores file.')
-@click.option('--sales-1', '-s1', type=click.File('r'), default='sales_one_data.json', help='The sales one file.')
-@click.option('--sales-2', '-s2', type=click.File('r'), default='sales_two_data.csv', help='The sales two file.')
+@click.option('--products', '-p', type=click.File('r'), default='product_data.json', show_default=True,
+              help='The products file.')
+@click.option('--stores', '-s', type=click.File('r'), default='store_data.json', show_default=True,
+              help='The stores file.')
+@click.option('--sales-1', '-s1', type=click.File('r'), default='sales_one_data.json', show_default=True,
+              help='The sales one file.')
+@click.option('--sales-2', '-s2', type=click.File('r'), default='sales_two_data.csv', show_default=True,
+              help='The sales two file.')
 def main(business_date: datetime, output: str,
          products: TextIOWrapper, stores: TextIOWrapper,
          sales_1: TextIOWrapper, sales_2: TextIOWrapper):

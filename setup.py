@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 setup(
     name='sales',
     version='0.1.0',
-    description='A tool to persist sales data.',
+    description='A tool to persist and analyze sales data.',
     author='Richard Harris',
     author_email='richard.w.harris@mac.com',
     packages=find_packages(),
