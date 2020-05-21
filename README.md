@@ -63,11 +63,11 @@ prices were in effect is also recorded as one part of the table's primary key.
 | Postcode | String(8) | not_null |
 | Address | String(160) | not_null |
 
-This, again, is basically the data imported. This time it is from `store_data.json`. Each day, when data is imported, this table
-will remain small, where each stores info will simply be replaced if any information changes. As such, there is an 
-assumption that, if a store is closed, it's id will be retired. Also, if a store is renamed, or has a change in postcode,
+This, again, is basically the data imported. This time it is from `store_data.json`. Each day when data is imported, this table
+will remain small and each store's info will simply be replaced if any of its information changes. As such, there is an 
+assumption that if a store is closed, it's id will be retired. Also, if a store is renamed or has a change in postcode,
 this change will simply result in an update to that store's row. Although there is considerable redundancy in each store's
-entry, this is of little impact on memory, since the table will only have a number of rows equal to those stores past and
+entry, this is of little impact on memory since the table will only have a number of rows equal to those stores past and
 present.
 
 ### `Sales`
@@ -84,11 +84,11 @@ present.
 The data which populates this table comes from two sources, `sales_one_data.json` and `sales_two_data.csv`. In addition
 to the data found here, a `BusinessDate` column is added to match SKU prices on the business day when sales are 
 recorded. The `Timestamp` column is UTC, but the period of time that the sales files cover will change in UTC during 
-British Summer Time (BST). It's easier to add this field than infer local dates from UTC DateTimes.
+British Summer Time (BST). It's easier to add this field than infer local dates from UTC `Timestamp`s.
 
 ## Querying
 Once the data has been imported for the trading days of interest, or over such a period of time, the database
-can be loaded and queried as anyone would normally in an SQLite client, or a Jupyter notebook, etc.
+can be loaded and queried as anyone would normally do in an SQLite client or a Jupyter notebook, etc.
 
 The source code to this tool, however, also contains a helpful class that uses the 
 [SQLAlchemy](https://www.sqlalchemy.org/) python library to support common queries of the sales data.
