@@ -17,7 +17,7 @@ class Store(Base):
     id = Column('Id', Integer, primary_key=True)
     name = Column('Name', String(40), nullable=False)
     postcode = Column('Postcode', String(8), nullable=False)
-    address = Column('Address', Text, nullable=False)
+    address = Column('Address', String(160), nullable=False)
 
 
 class Sale(Base):
