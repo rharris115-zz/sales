@@ -1,7 +1,19 @@
+# Sales Data and Analysis
+## Requirements
+- python version 3.7+
+- pip
+- SQLite
+## Installation
+In the terminal, the following commands install the app.
+```commandline
+cd <this_directory>
+pip install .
+```
+
 # Data Model
 The model consists of three tables, `Products`, `Stores`, and `Sales`.
 
-Although there is also a file, `staff_data.json`, that maps staff to specific stores, at present this is not necessary 
+Although there is also a file `staff_data.json` that maps staff to specific stores, at present this is not necessary 
 for the purposes of the current model. The main reason this is so is that staff ids are recorded on each sale 
 along with the store where that sale occurred. On the assumption that it is possible that a staff member may work from 
 time to time in more than one store, it is safer to keep `store_id` in the `Sales` table and not infer this from 
@@ -49,9 +61,9 @@ present.
 | StoreId | Integer | not_null, foreign_key -> Store.Id |
 
 The data which populates this table comes from two sources, `sales_one_data.json` and `sales_two_data.csv`. In addition
-to the data found here, a `BusinessDate` column is added to match SKU prices on the business day when sales were 
+to the data found here, a `BusinessDate` column is added to match SKU prices on the business day when sales are 
 recorded. The `Timestamp` column is UTC, but the period of time that the sales files cover will change in UTC during 
-British Summer Time (BST). It's easier to add this field, than infer local dates from UTC DateTimes.
+British Summer Time (BST). It's easier to add this field than infer local dates from UTC DateTimes.
 
 # Data File Importation and Issues Confronted
 ## Product Data: `product_data.json`
@@ -114,7 +126,7 @@ List staff ids associated with each store. As mentioned earlier, we don't need a
 ```
 - `Id` can be null.
 - It's possible to find duplicate sales records.
-- `SoldAtUtc`, it's name indicates, is a UTC time. However, this file reports sales over the course of a day
+- `SoldAtUtc`, as it's name indicates, is a UTC time. However, this file reports sales over the course of a day
 that can start at `23:00:00` UTC during British Summer Time.
 
 ## Sales Two Data: `sales_two_data.csv`
