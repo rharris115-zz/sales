@@ -220,7 +220,7 @@ framing to move off the shelf. This may also be useful if information on each SK
 ```python
 result = SalesQuery \
     .of_average_sold_for_and_sku_price_by_sku() \
-    .run(session=session_with_products_and_stores_and_sales_imported)
+    .run(session=session)
 ```
 ```python
 result = {
